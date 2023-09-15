@@ -68,8 +68,9 @@ cc.game.onStart = function(){
     // The game will be resized when browser size change
     cc.view.resizeWithBrowserSize(true);
     //load resources
+    //加载完所有资源后显示游戏界面
     cc.LoaderScene.preload(g_resources, function () {
-        cc.director.runScene(new HelloWorldScene());
+        cc.director.runScene(new GamePlayScene());
     }, this);
 };
 cc.game.run();

@@ -14,5 +14,8 @@
     "jsList" : [
         "src/resource.js",
         "src/app.js"
+        ,
+        "src/config.js",
+        "src/sokoban.js"
     ]
 }
