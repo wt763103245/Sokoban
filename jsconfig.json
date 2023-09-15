@@ -1,0 +1,69 @@
+/*
+ * @Author: 萌新王
+ * @Date: 2023-09-15 15:01:02
+ * @LastEditors: 萌新王
+ * @LastEditTime: 2023-09-15 15:02:42
+ * @FilePath: \Sokoban\jsconfig.json
+ * @Email: 763103245@qq.com
+ */
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      // 以"@/"开头的导入路径都映射为"*"
+      "@/*": [
+        // "./src/*",
+        "*",
+        // "js",
+      ]
+    },
+    /*//编译选项target为ES6
+    // "target": "es6",
+    //编译选项target为ES6
+    // "module": "commonjs",
+    //输出目录为./dist
+    // "outDir": "./dist"
+    //所有相对路径都是相对于该目录
+    // sourceMap：是否生成source map文件
+    // removeComments：是否移除注释
+    // strictNullChecks：是否启用空值检查
+    // noImplicitAny：是否禁止隐式的any类型*/
+  },
+  //需要编译的目录
+  "include": [
+    // "js",
+    "frameworks/cocos2d-html5/**/*.js",
+    // "cocos2d-js/**/*.js",
+    // "**/*.js",
+    "src/**/*.js",
+  ],
+  //保存文件时自动进行编译
+  "compileOnSave": true,
+  // //引入第三方库时自动下载该库的类型声明文件
+  // "typeAcquisition": {
+  //   "enable": true
+  // },
+  //需要编译的源文件
+  "files": [
+    // "./src/main.js",
+    "main.js",
+  ],
+  //排除目录
+  "exclude": [
+    "node_modules",
+    "**/node_modules/*",
+    "dist",
+    "build",
+    "res",
+    // "res1",
+    "cocosstudio",
+    "**/*.[!js]"
+  ],
+  //工程引用
+  // "references": [
+  //   {
+  //     "path": "../common",
+  //     "prepend": true
+  //   }
+  // ]*/
+}
