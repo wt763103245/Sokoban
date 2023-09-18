@@ -2,7 +2,7 @@
  * @Author: 萌新王
  * @Date: 2023-09-15 16:49:39
  * @LastEditors: 萌新王
- * @LastEditTime: 2023-09-18 16:16:23
+ * @LastEditTime: 2023-09-18 17:22:30
  * @FilePath: \Sokoban\src\config.js
  * @Email: 763103245@qq.com
  */
@@ -13,6 +13,7 @@ var Config = {
             y: 8,
         }
     },
+    /**地图 */
     Level: [
         [
             ["×", "×", "×", "×", "×", "×", "×", "×"],
@@ -25,6 +26,19 @@ var Config = {
             ["×", "×", "×", "×", "×", "×", "×", "×"],
         ]
     ],
+    /**节点类型 */
+    NodeType: {
+        /**障碍 */
+        zoc: "x",
+        /**玩家 */
+        player: "△",
+        /**道路 */
+        road: "·",
+        /**目标点 */
+        target: "Z",
+        /**箱子 */
+        box: "□",
+    }
 }
 for (var i = 0; i < Config.Level.Level; i++) {
     Config.Level[i] = Config.Level[i].reverse()

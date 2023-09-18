@@ -2,7 +2,7 @@
  * @Author: 萌新王
  * @Date: 2023-09-15 15:10:28
  * @LastEditors: 萌新王
- * @LastEditTime: 2023-09-18 16:47:31
+ * @LastEditTime: 2023-09-18 17:47:58
  * @FilePath: \Sokoban\src\sokoban.js
  * @Email: 763103245@qq.com
  */
@@ -164,9 +164,9 @@ var GamePlayLayer = cc.Layer.extend({
             x: oldPos.x + pos.x,
             y: oldPos.y + pos.y,
         };
-        var go1 = this.isGo(oldPos.x, oldPos.y)
+        var go1 = this.isGo(oldPos)
         if (go1) {
-            var node1 = this.getGridItem(oldPos.x, oldPos.y)
+            var node1 = this.getGridItem(oldPos)
             //玩家正常走
             if (this.isWhat(node1) != "□") {
                 this.road(this.pos);
@@ -191,7 +191,7 @@ var GamePlayLayer = cc.Layer.extend({
      * @param {Number} x 
      * @param {Number} y 
      */
-    zoc: function (x, y = null) {
+    zoc: function (x, y = null, init=false) {
         if (y == null) {
             y = x.y;
             x = x.x;
@@ -201,12 +201,21 @@ var GamePlayLayer = cc.Layer.extend({
         //红色字体
         node.setFontFillColor(new cc.Color(255, 0, 0, 0))
         node._tag = "×";
+        node._pos = { "x": x, "y": y };
+        if (init) {
+            /**经过过后的类型 */
+            node._oldType = node._tag;
+            /**@type {Boolean} 不可通过 */
+            node._assable = false;
+            /**@type {Boolean} 不可移动 */
+            node._mobile = false;
+        };
     },
     /**箱子
      * @param {Number} x 
      * @param {Number} y 
      */
-    box: function (x, y = null) {
+    box: function (x, y = null, init=false) {
         if (y == null) {
             y = x.y;
             x = x.x;
@@ -216,12 +225,21 @@ var GamePlayLayer = cc.Layer.extend({
         //深棕色字体
         node.setFontFillColor(new cc.Color(99, 64, 66, 0))
         node._tag = "□";
+        node._pos = { "x": x, "y": y };
+        if (init) {
+            /**经过过后的类型 */
+            node._oldType = Config.NodeType.road;
+            /**@type {Boolean} 可通过 */
+            node._assable = true;
+            /**@type {Boolean} 可移动 */
+            node._mobile = true;
+        }
     },
     /**玩家
      * @param {Number} x 
      * @param {Number} y 
      */
-    player: function (x, y = null) {
+    player: function (x, y = null, init=false) {
         if (y == null) {
             y = x.y;
             x = x.x;
@@ -233,12 +251,21 @@ var GamePlayLayer = cc.Layer.extend({
         node._tag = "△";
         this._player = node;
         this.pos = { "x": x, "y": y };
+        node._pos = { "x": x, "y": y };
+        if (init) {
+            /**经过过后的类型 */
+            node._oldType = node.NodeType.road;
+            /**@type {Boolean} 可通过 */
+            node._assable = true;
+            /**@type {Boolean} 可移动 */
+            node._mobile = true;
+        };
     },
     /**目标点
      * @param {Number} x 
      * @param {Number} y 
      */
-    target: function (x, y = null) {
+    target: function (x, y = null, init=false) {
         if (y == null) {
             y = x.y;
             x = x.x;
@@ -248,6 +275,15 @@ var GamePlayLayer = cc.Layer.extend({
         //黄色字体
         node.setFontFillColor(new cc.Color(255, 255, 0, 0))
         node._tag = "Z";
+        node._pos = { "x": x, "y": y };
+        if (init) {
+            /**经过过后的类型 */
+            node._oldType = node._tag;
+            /**@type {Boolean} 可通过 */
+            node._assable = true;
+            /**@type {Boolean} 不可移动 */
+            node._mobile = false;
+        };
     },
     /**道路
      * @param {Number} x 
@@ -263,6 +299,7 @@ var GamePlayLayer = cc.Layer.extend({
         //绿色字体
         node.setFontFillColor(new cc.Color(0, 255, 0, 0))
         node._tag = "·";
+        node._pos = { "x": x, "y": y };
     },
     isGo: function (x, y = null) {
         if (y == null) {
@@ -281,6 +318,42 @@ var GamePlayLayer = cc.Layer.extend({
     },
     isWhat: function (node) {
         return node._tag
+    },
+    /**移动到
+     * @param {cc.Node} node 
+     * @param {Number|cc.Point} x 
+     * @param {Number} y 
+     */
+    move: function (node, x, y = null) {
+        if (y == null) {
+            y = x.y;
+            x = x.x;
+        };
+        var newPos = node._pos;
+        newPos = {
+            x: newPos.x + x,
+            y: newPos.y + y,
+        };
+        /**新位置当前的节点 */
+        var newNode = this.getGridItem(newPos);
+        //新位置可以通过
+        if (newNode._assable) {
+            //新位置可以移动
+            if (newNode._mobile){
+                
+            }
+            /**位置类型 */
+            var type = this.isWhat(node);
+            var mapFunc = {
+                "×": this.zoc,
+                "□": this.box,
+                "△": this.player,
+                "Z": this.target,
+                "·": this.road,
+            }
+            var func = mapFunc[type].bind(this);
+            func(x, y);
+        }
     },
 })
 /**添加游戏场景 */
