@@ -2,7 +2,7 @@
  * @Author: 萌新王
  * @Date: 2023-09-15 16:49:39
  * @LastEditors: 萌新王
- * @LastEditTime: 2023-09-15 19:07:38
+ * @LastEditTime: 2023-09-18 16:16:23
  * @FilePath: \Sokoban\src\config.js
  * @Email: 763103245@qq.com
  */
@@ -26,3 +26,6 @@ var Config = {
         ]
     ],
 }
+for (var i = 0; i < Config.Level.Level; i++) {
+    Config.Level[i] = Config.Level[i].reverse()
+} 
