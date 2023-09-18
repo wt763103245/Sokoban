@@ -2,7 +2,7 @@
  * @Author: 萌新王
  * @Date: 2023-09-15 15:10:28
  * @LastEditors: 萌新王
- * @LastEditTime: 2023-09-18 16:44:09
+ * @LastEditTime: 2023-09-18 16:47:31
  * @FilePath: \Sokoban\src\sokoban.js
  * @Email: 763103245@qq.com
  */
@@ -88,7 +88,7 @@ var GamePlayLayer = cc.Layer.extend({
      * @param {Number} y 位置y
      * @returns {cc.Node} 网格中的节点
      */
-    getGridItem: function (x, y=null) {
+    getGridItem: function (x, y = null) {
         if (y == null) {
             y = x.y;
             x = x.x;
@@ -174,9 +174,11 @@ var GamePlayLayer = cc.Layer.extend({
                 //推箱子
             } else {
                 var pos2 = oldPos;
-                pos2.x += pos.x;
-                pos2.y += pos.y;
-                var go2 = this.isGo(pos2.x, pos2.y)
+                pos2 = {
+                    x: pos2.x + pos.x,
+                    y: pos2.y + pos.y
+                };
+                var go2 = this.isGo(pos2)
                 if (go2) {
                     this.road(this.pos);
                     this.player(oldPos);
@@ -189,7 +191,7 @@ var GamePlayLayer = cc.Layer.extend({
      * @param {Number} x 
      * @param {Number} y 
      */
-    zoc: function (x, y=null) {
+    zoc: function (x, y = null) {
         if (y == null) {
             y = x.y;
             x = x.x;
@@ -204,7 +206,7 @@ var GamePlayLayer = cc.Layer.extend({
      * @param {Number} x 
      * @param {Number} y 
      */
-    box: function (x, y=null) {
+    box: function (x, y = null) {
         if (y == null) {
             y = x.y;
             x = x.x;
@@ -219,7 +221,7 @@ var GamePlayLayer = cc.Layer.extend({
      * @param {Number} x 
      * @param {Number} y 
      */
-    player: function (x, y=null) {
+    player: function (x, y = null) {
         if (y == null) {
             y = x.y;
             x = x.x;
@@ -236,7 +238,7 @@ var GamePlayLayer = cc.Layer.extend({
      * @param {Number} x 
      * @param {Number} y 
      */
-    target: function (x, y=null) {
+    target: function (x, y = null) {
         if (y == null) {
             y = x.y;
             x = x.x;
@@ -251,7 +253,7 @@ var GamePlayLayer = cc.Layer.extend({
      * @param {Number} x 
      * @param {Number} y 
      */
-    road: function (x, y=null) {
+    road: function (x, y = null) {
         if (y == null) {
             y = x.y;
             x = x.x;
@@ -262,7 +264,7 @@ var GamePlayLayer = cc.Layer.extend({
         node.setFontFillColor(new cc.Color(0, 255, 0, 0))
         node._tag = "·";
     },
-    isGo: function (x, y=null) {
+    isGo: function (x, y = null) {
         if (y == null) {
             y = x.y;
             x = x.x;
