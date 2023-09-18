@@ -2,7 +2,7 @@
  * @Author: 萌新王
  * @Date: 2023-09-15 15:10:28
  * @LastEditors: 萌新王
- * @LastEditTime: 2023-09-15 20:10:00
+ * @LastEditTime: 2023-09-18 16:44:09
  * @FilePath: \Sokoban\src\sokoban.js
  * @Email: 763103245@qq.com
  */
@@ -11,7 +11,6 @@ var GamePlayLayer = cc.Layer.extend({
     grid: null,
     _player: null,
     winSize: { width: 0, height: 0 },
-    grid: null,
     Map: null,
     pos: null,
     ctor: function () {
@@ -78,7 +77,7 @@ var GamePlayLayer = cc.Layer.extend({
                 /**类型对应方法 */
                 var _func = mapFunc[type].bind(this)
                 //设定当前位置的样式
-                _func(i, j);
+                _func(j, i);
             };
         };
         // 将网格添加到场景中
@@ -89,8 +88,12 @@ var GamePlayLayer = cc.Layer.extend({
      * @param {Number} y 位置y
      * @returns {cc.Node} 网格中的节点
      */
-    getGridItem: function (x, y) {
-        return this.grid._grid[x][y]
+    getGridItem: function (x, y=null) {
+        if (y == null) {
+            y = x.y;
+            x = x.x;
+        };
+        return this.grid._grid[y][x]
     },
     initControl: function () {
         // var player = this.player = new cc.LabelTTF("△", "Arial", 38);
@@ -155,25 +158,21 @@ var GamePlayLayer = cc.Layer.extend({
      * @param {cc.Point|{x: Number, y: Number}} pos 
      */
     AddPos: function (pos) {
-        /**@type {cc.Sprite} 玩家精灵 */
-        var player = this._player;
         /**@type {cc.Point} 玩家当前位置 */
         var oldPos = this.pos;
-        oldPos.x += pos.x;
-        oldPos.y += pos.y;
+        oldPos = {
+            x: oldPos.x + pos.x,
+            y: oldPos.y + pos.y,
+        };
         var go1 = this.isGo(oldPos.x, oldPos.y)
-        cc.log(1)
         if (go1) {
-            cc.log(2)
             var node1 = this.getGridItem(oldPos.x, oldPos.y)
             //玩家正常走
             if (this.isWhat(node1) != "□") {
-                cc.log(3)
                 this.road(this.pos);
                 this.player(oldPos);
                 //推箱子
             } else {
-                cc.log(4)
                 var pos2 = oldPos;
                 pos2.x += pos.x;
                 pos2.y += pos.y;
@@ -190,7 +189,11 @@ var GamePlayLayer = cc.Layer.extend({
      * @param {Number} x 
      * @param {Number} y 
      */
-    zoc: function (x, y) {
+    zoc: function (x, y=null) {
+        if (y == null) {
+            y = x.y;
+            x = x.x;
+        };
         var node = this.getGridItem(x, y);
         node.setString("×");
         //红色字体
@@ -201,7 +204,11 @@ var GamePlayLayer = cc.Layer.extend({
      * @param {Number} x 
      * @param {Number} y 
      */
-    box: function (x, y) {
+    box: function (x, y=null) {
+        if (y == null) {
+            y = x.y;
+            x = x.x;
+        };
         var node = this.getGridItem(x, y);
         node.setString("□");
         //深棕色字体
@@ -212,7 +219,11 @@ var GamePlayLayer = cc.Layer.extend({
      * @param {Number} x 
      * @param {Number} y 
      */
-    player: function (x, y) {
+    player: function (x, y=null) {
+        if (y == null) {
+            y = x.y;
+            x = x.x;
+        };
         var node = this.getGridItem(x, y);
         node.setString("△");
         //蓝色字体
@@ -225,7 +236,11 @@ var GamePlayLayer = cc.Layer.extend({
      * @param {Number} x 
      * @param {Number} y 
      */
-    target: function (x, y) {
+    target: function (x, y=null) {
+        if (y == null) {
+            y = x.y;
+            x = x.x;
+        };
         var node = this.getGridItem(x, y);
         node.setString("z");
         //黄色字体
@@ -236,20 +251,28 @@ var GamePlayLayer = cc.Layer.extend({
      * @param {Number} x 
      * @param {Number} y 
      */
-    road: function (x, y) {
+    road: function (x, y=null) {
+        if (y == null) {
+            y = x.y;
+            x = x.x;
+        };
         var node = this.getGridItem(x, y);
         node.setString("·");
         //绿色字体
         node.setFontFillColor(new cc.Color(0, 255, 0, 0))
         node._tag = "·";
     },
-    isGo: function (x, y) {
-        if (x > 0 && y > 0) {
+    isGo: function (x, y=null) {
+        if (y == null) {
+            y = x.y;
+            x = x.x;
+        };
+        if (x >= 0 && y >= 0) {
             /**@type {Array[]} */
             var map = this.Map;
-            if (x < map.length) {
-                var pos = map[x]
-                if (y < pos.length) return this.isWhat(this.getGridItem(x, y)) in ["□", "·"];
+            if (y < map.length) {
+                var pos = map[y]
+                if (x < pos.length) return ["□", "·"].includes(this.isWhat(this.getGridItem(x, y)));
             }
         }
         return false;
