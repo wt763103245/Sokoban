@@ -2,7 +2,7 @@
  * @Author: 萌新王
  * @Date: 2023-09-15 15:10:28
  * @LastEditors: 萌新王
- * @LastEditTime: 2023-09-20 15:24:05
+ * @LastEditTime: 2023-09-20 15:26:45
  * @FilePath: \Sokoban\src\sokoban.js
  * @Email: 763103245@qq.com
  */
@@ -171,7 +171,7 @@ var GamePlayLayer = cc.Layer.extend({
                         func();
                     };
                 }
-            }.bind(this);
+            }.bind(this)
         });
         //将上面创建的监听添加到事件管理器中
         cc.eventManager.addListener(listener, this);
