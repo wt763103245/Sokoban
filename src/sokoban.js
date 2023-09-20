@@ -2,7 +2,7 @@
  * @Author: 萌新王
  * @Date: 2023-09-15 15:10:28
  * @LastEditors: 萌新王
- * @LastEditTime: 2023-09-18 17:47:58
+ * @LastEditTime: 2023-09-20 14:48:42
  * @FilePath: \Sokoban\src\sokoban.js
  * @Email: 763103245@qq.com
  */
@@ -77,7 +77,7 @@ var GamePlayLayer = cc.Layer.extend({
                 /**类型对应方法 */
                 var _func = mapFunc[type].bind(this)
                 //设定当前位置的样式
-                _func(j, i);
+                _func(j, i, true);
             };
         };
         // 将网格添加到场景中
@@ -158,40 +158,13 @@ var GamePlayLayer = cc.Layer.extend({
      * @param {cc.Point|{x: Number, y: Number}} pos 
      */
     AddPos: function (pos) {
-        /**@type {cc.Point} 玩家当前位置 */
-        var oldPos = this.pos;
-        oldPos = {
-            x: oldPos.x + pos.x,
-            y: oldPos.y + pos.y,
-        };
-        var go1 = this.isGo(oldPos)
-        if (go1) {
-            var node1 = this.getGridItem(oldPos)
-            //玩家正常走
-            if (this.isWhat(node1) != "□") {
-                this.road(this.pos);
-                this.player(oldPos);
-                //推箱子
-            } else {
-                var pos2 = oldPos;
-                pos2 = {
-                    x: pos2.x + pos.x,
-                    y: pos2.y + pos.y
-                };
-                var go2 = this.isGo(pos2)
-                if (go2) {
-                    this.road(this.pos);
-                    this.player(oldPos);
-                    this.box(pos2);
-                }
-            }
-        }
+        this.move(this._player, pos);
     },
     /**障碍
      * @param {Number} x 
      * @param {Number} y 
      */
-    zoc: function (x, y = null, init=false) {
+    zoc: function (x, y = null, init = false) {
         if (y == null) {
             y = x.y;
             x = x.x;
@@ -215,7 +188,7 @@ var GamePlayLayer = cc.Layer.extend({
      * @param {Number} x 
      * @param {Number} y 
      */
-    box: function (x, y = null, init=false) {
+    box: function (x, y = null, init = false) {
         if (y == null) {
             y = x.y;
             x = x.x;
@@ -226,20 +199,20 @@ var GamePlayLayer = cc.Layer.extend({
         node.setFontFillColor(new cc.Color(99, 64, 66, 0))
         node._tag = "□";
         node._pos = { "x": x, "y": y };
+        /**@type {Boolean} 可移动 */
+        node._mobile = true;
         if (init) {
             /**经过过后的类型 */
             node._oldType = Config.NodeType.road;
             /**@type {Boolean} 可通过 */
             node._assable = true;
-            /**@type {Boolean} 可移动 */
-            node._mobile = true;
         }
     },
     /**玩家
      * @param {Number} x 
      * @param {Number} y 
      */
-    player: function (x, y = null, init=false) {
+    player: function (x, y = null, init = false) {
         if (y == null) {
             y = x.y;
             x = x.x;
@@ -254,7 +227,7 @@ var GamePlayLayer = cc.Layer.extend({
         node._pos = { "x": x, "y": y };
         if (init) {
             /**经过过后的类型 */
-            node._oldType = node.NodeType.road;
+            node._oldType = Config.NodeType.road;
             /**@type {Boolean} 可通过 */
             node._assable = true;
             /**@type {Boolean} 可移动 */
@@ -265,7 +238,7 @@ var GamePlayLayer = cc.Layer.extend({
      * @param {Number} x 
      * @param {Number} y 
      */
-    target: function (x, y = null, init=false) {
+    target: function (x, y = null, init = false) {
         if (y == null) {
             y = x.y;
             x = x.x;
@@ -289,7 +262,7 @@ var GamePlayLayer = cc.Layer.extend({
      * @param {Number} x 
      * @param {Number} y 
      */
-    road: function (x, y = null) {
+    road: function (x, y = null, init = false) {
         if (y == null) {
             y = x.y;
             x = x.x;
@@ -300,6 +273,14 @@ var GamePlayLayer = cc.Layer.extend({
         node.setFontFillColor(new cc.Color(0, 255, 0, 0))
         node._tag = "·";
         node._pos = { "x": x, "y": y };
+        /**@type {Boolean} 不可移动 */
+        node._mobile = false;
+        if (init) {
+            /**经过过后的类型 */
+            node._oldType = node._tag;
+            /**@type {Boolean} 可通过 */
+            node._assable = true;
+        };
     },
     isGo: function (x, y = null) {
         if (y == null) {
@@ -316,44 +297,58 @@ var GamePlayLayer = cc.Layer.extend({
         }
         return false;
     },
-    isWhat: function (node) {
-        return node._tag
+    /**得到当前节点移动过后应该表现的类型
+     * @param {*} node 当前节点
+     * @returns {Config.NodeType}
+     */
+    getMovementType: function (node) {
+        return node._oldType;
+    },
+    getNodeType: function (node) {
+        return node._tag;
     },
     /**移动到
      * @param {cc.Node} node 
      * @param {Number|cc.Point} x 
      * @param {Number} y 
+     * @returns {Boolean} 是否移动了
      */
     move: function (node, x, y = null) {
         if (y == null) {
             y = x.y;
             x = x.x;
         };
-        var newPos = node._pos;
-        newPos = {
-            x: newPos.x + x,
-            y: newPos.y + y,
+        var oldPos = node._pos;
+        var newPos = {
+            x: oldPos.x + x,
+            y: oldPos.y + y,
         };
         /**新位置当前的节点 */
         var newNode = this.getGridItem(newPos);
         //新位置可以通过
         if (newNode._assable) {
             //新位置可以移动
-            if (newNode._mobile){
-                
-            }
+            if (newNode._mobile) {
+                if (!this.move(newNode, x, y)) return false;
+            };
             /**位置类型 */
-            var type = this.isWhat(node);
+            var oldType = this.getMovementType(node);
+            var newType = this.getNodeType(node);
             var mapFunc = {
                 "×": this.zoc,
                 "□": this.box,
                 "△": this.player,
                 "Z": this.target,
                 "·": this.road,
-            }
-            var func = mapFunc[type].bind(this);
-            func(x, y);
+            };
+            var oldFunc = mapFunc[oldType].bind(this);
+            oldFunc(oldPos);
+            var newFunc = mapFunc[newType].bind(this);
+            newFunc(newPos);
+            //移动过的位置
+            return true;
         }
+        return false;
     },
 })
 /**添加游戏场景 */
